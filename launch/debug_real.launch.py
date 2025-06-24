@@ -248,26 +248,26 @@ def generate_launch_description():
     
     return LaunchDescription([
         # gazebo_launch,
-        robot_state_publisher_node,
-        rslidar,
-        kinematics_controller,
-        low_level_controller,
+        robot_state_publisher_node, # general
+        rslidar, # for state estimation
+        kinematics_controller, # for movement
+        low_level_controller, # for movement
         # joy_to_cmd_vel,
         # joy,
         # terrain_analysis_launch,
         # terrain_analysis_ext_launch,
         # teleop_twist_joy_launch,
         dlio_launch,
-        graph_msf_launch,
-        open_slam_launch,
+        graph_msf_launch, # state esimtation NOTE: dependent on open_slam_launch
+        open_slam_launch, # state esimtation
         local_odometry,
         static_tf_map_to_odom,
         static_tf_map_to_graph_msf,
         # exploration_launch,
         # far_planner_launch,
         # local_planner_launch,
-        # twist_pid,
-        config_topics,
-        twist_mux,
-        rviz2,
+        # twist_pid, # called by path_follower
+        config_topics, # TODO: understand
+        twist_mux, # for movement
+        rviz2, # general
     ])
