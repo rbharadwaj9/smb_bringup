@@ -257,7 +257,7 @@ def generate_launch_description():
         # terrain_analysis_launch,
         # terrain_analysis_ext_launch,
         # teleop_twist_joy_launch,
-        dlio_launch,
+        # dlio_launch,
         graph_msf_launch, # state esimtation NOTE: dependent on open_slam_launch
         open_slam_launch, # state esimtation
         local_odometry,
