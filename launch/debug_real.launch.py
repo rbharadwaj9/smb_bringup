@@ -11,7 +11,7 @@ import os
 
 
 def generate_launch_description():
-    
+
     static_tf_map_to_odom = Node(
         package="tf2_ros",
         executable="static_transform_publisher",
@@ -19,7 +19,7 @@ def generate_launch_description():
         arguments=["0", "0", "0", "0", "0", "0", "odom", "map"],
         output="log",
     )
-    
+
     static_tf_map_to_graph_msf = Node(
         package="tf2_ros",
         executable="static_transform_publisher",
@@ -54,7 +54,7 @@ def generate_launch_description():
         executable="robot_state_publisher",
         name="robot_state_publisher",
         output="screen",
-        parameters=[{"robot_description": robot_description, "use_sim_time": False}],    
+        parameters=[{"robot_description": robot_description, "use_sim_time": False}],
     )
 
     rslidar_config_file = get_package_share_directory('smb_bringup') + '/config/rslidar_config.yaml'
@@ -65,7 +65,7 @@ def generate_launch_description():
             output="screen",
             parameters=[{'config_path': rslidar_config_file}]
         )
-    
+
     low_level_controller = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             PathJoinSubstitution([
@@ -75,7 +75,7 @@ def generate_launch_description():
             ])
         ]),
     )
-    
+
     joy_to_cmd_vel = Node(
         package="smb_kinematics",
         executable="smb_cmd_vel",
@@ -83,7 +83,7 @@ def generate_launch_description():
         output="screen",
         parameters=[{"use_sim_time": False}],
     )
-    
+
     joy = Node(
         package="joy",
         executable="joy_node",
@@ -143,7 +143,7 @@ def generate_launch_description():
         }.items(),
         # output="log",
     )
-    
+
     local_odometry = Node(
         package="smb_kinematics",
         executable="odometry_and_pointcloud_conversion_graph_msf",
@@ -151,7 +151,7 @@ def generate_launch_description():
         output="screen",
         parameters=[{"use_sim_time": False}],
     )
-    
+
     far_planner_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             PathJoinSubstitution([
@@ -161,7 +161,7 @@ def generate_launch_description():
             ])
         ]),
     )
-    
+
     exploration_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [get_package_share_directory('tare_planner'), '/explore_robotx.launch']),
@@ -170,7 +170,7 @@ def generate_launch_description():
             "rviz": "true",
         }.items(),
     )
-    
+
     local_planner_launch = IncludeLaunchDescription(
         FrontendLaunchDescriptionSource([
             PathJoinSubstitution([
@@ -180,7 +180,7 @@ def generate_launch_description():
             ])
         ]),
     )
-    
+
     twist_pid = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             PathJoinSubstitution([
@@ -190,7 +190,7 @@ def generate_launch_description():
             ])
         ),
     )
-    
+
     rviz2 = Node(
         package='rviz2',
         executable='rviz2',
@@ -207,7 +207,7 @@ def generate_launch_description():
     )
 
     default_config_topics = os.path.join(get_package_share_directory('smb_bringup'), 'config', 'twist_mux_topics.yaml')
-    
+
     config_topics = DeclareLaunchArgument(
             'config_topics',
             default_value=default_config_topics,
@@ -233,7 +233,7 @@ def generate_launch_description():
             ])
         ),
     )
-    
+
     open_slam_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             PathJoinSubstitution([
@@ -242,14 +242,14 @@ def generate_launch_description():
                 "summer_school_slam_robot_launch.py"
             ])
         ),
-    ) 
-    
-    
-    
+    )
+
+
+
     return LaunchDescription([
         # gazebo_launch,
         robot_state_publisher_node, # general
-        rslidar, # for state estimation
+        rslidar, # for state estimation (input)
         kinematics_controller, # for movement
         low_level_controller, # for movement
         # joy_to_cmd_vel,
@@ -259,15 +259,15 @@ def generate_launch_description():
         # teleop_twist_joy_launch,
         # dlio_launch,
         graph_msf_launch, # state esimtation NOTE: dependent on open_slam_launch
-        open_slam_launch, # state esimtation
+        open_slam_launch, # state esimtation (Kind of an input)
         local_odometry,
-        static_tf_map_to_odom,
-        static_tf_map_to_graph_msf,
+        static_tf_map_to_odom, # (input)
+        static_tf_map_to_graph_msf, # (input)
         # exploration_launch,
         # far_planner_launch,
         # local_planner_launch,
         # twist_pid, # called by path_follower
-        config_topics, # TODO: understand
+        config_topics, # selects priorities of mux to drive the robot
         twist_mux, # for movement
         rviz2, # general
     ])
